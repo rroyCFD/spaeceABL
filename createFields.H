@@ -2,9 +2,9 @@
 spaeceControl spaece(mesh, "SPAeCE");
 Info << spaece.algorithmName() << endl;
 
-Info<< "Reading thermophysical properties\n" << endl;
+Info<< "Creating/Reading thermophysical properties\n" << endl;
 
-Info<< "Reading field T\n" << endl;
+Info<< "Creating/Reading field T\n" << endl;
 volScalarField T
 (
     IOobject
@@ -18,7 +18,7 @@ volScalarField T
     mesh
 );
 
-Info<< "Reading field p_rgh\n" << endl;
+Info<< "Creating/Reading field p_rgh\n" << endl;
 volScalarField p_rgh
 (
     IOobject
@@ -32,7 +32,7 @@ volScalarField p_rgh
     mesh
 );
 
-Info<< "Reading field U\n" << endl;
+Info<< "Creating/Reading field U\n" << endl;
 volVectorField U
 (
     IOobject
@@ -56,25 +56,51 @@ autoPtr<incompressible::turbulenceModel> turbulence
     incompressible::turbulenceModel::New(U, phi, laminarTransport)
 );
 
-// Kinematic density for buoyancy force
-volScalarField rhok
-(
-    IOobject
-    (
-        "rhok",
-        runTime.timeName(),
-        mesh
-    ),
-    1.0 - beta*(T - TRef)
-);
+// Create Coriolis force object [m/s^2].
+Info << "Creating Coriolis force" << endl;
+CoriolisForce Coriolis(U);
 
-// kinematic turbulent thermal thermal conductivity m2/s
-Info<< "Reading field alphat\n" << endl;
-volScalarField alphat
+
+// Create external source term objects [m/s^2 and K/s].
+Info << "Creating and reading volumetric source terms for momentum and temperature" << endl;
+DrivingForce<vector> momentumSourceTerm("momentum",U);
+DrivingForce<scalar> temperatureSourceTerm("temperature",T);
+
+
+// // Kinematic density for buoyancy force
+// volScalarField rhok
+// (
+//     IOobject
+//     (
+//         "rhok",
+//         runTime.timeName(),
+//         mesh
+//     ),
+//     1.0 - beta*(T - TRef)
+// );
+
+// // kinematic turbulent thermal thermal conductivity m2/s
+// Info<< "Creating/Reading field kappat\n" << endl;
+// volScalarField kappat
+// (
+//     IOobject
+//     (
+//         "kappat",
+//         runTime.timeName(),
+//         mesh,
+//         IOobject::MUST_READ,
+//         IOobject::AUTO_WRITE
+//     ),
+//     mesh
+// );
+
+// Create and read the wall shear stress field [m^2/s^2].
+Info << "Creating and reading the wall shear stress field, Rwall" << endl;
+volSymmTensorField Rwall
 (
     IOobject
     (
-        "alphat",
+        "Rwall",
         runTime.timeName(),
         mesh,
         IOobject::MUST_READ,
@@ -84,10 +110,25 @@ volScalarField alphat
 );
 
 
-#include "readGravitationalAcceleration.H"
-#include "readhRef.H"
-#include "gh.H"
+// Create and read the wall temperature flux field [K-m/s].
+Info << "Creating and reading the wall temperature flux field, qwall" << endl;
+volVectorField qwall
+(
+    IOobject
+    (
+        "qwall",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
 
+
+// #include "readGravitationalAcceleration.H"
+// #include "readhRef.H"
+// #include "gh.H"
 
 volScalarField p
 (
@@ -99,7 +140,8 @@ volScalarField p
         IOobject::NO_READ,
         IOobject::AUTO_WRITE
     ),
-    p_rgh + rhok*gh
+    mesh,
+    dimensionedScalar("", p_rgh.dimensions(), 0.0)
 );
 
 label pRefCell = 0;
@@ -107,16 +149,23 @@ scalar pRefValue = 0.0;
 
 bool pRefOn(setRefCell (p, p_rgh, spaece.dict(), pRefCell, pRefValue ));
 
-// if (p_rgh.needReference())
-if (pRefOn)
+
+// Create buoyancy model that requires a reference height, 
+// which is the height of the pressure reference cell.
+Info << "Creating the Boussinesq buoyancy model" << endl;
+vector hRef_ = vector::zero;
+if (pRefCell != -1)
 {
-    p += dimensionedScalar
-    (
-        "p",
-        p.dimensions(),
-        pRefValue - getRefCellValue(p, pRefCell)
-    );
+    hRef_ = mesh.C()[pRefCell];
 }
+reduce(hRef_,sumOp<vector>());
+dimensionedVector hRef("hRef",dimLength,hRef_);
+    
+buoyancyModel Boussinesq(T, TRef, hRef);
+
+// Adjust p and p_rgh with reference height and background pressure
+#include "adjustPressureLevel.H"
+
 
 #include "createpp.H"
 mesh.setFluxRequired(pp.name());

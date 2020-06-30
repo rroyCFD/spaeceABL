@@ -59,6 +59,7 @@ while (spaece.correctNonOrthogonal())
     );
 
     // no correction to reference cell pressure
+    // at ref cell; background pressure is also zero; i.e. p[pRefCell] = p_rgh[pRefCell]
     scalar ppRefValue = pRefValue - getRefCellValue(p, pRefCell);
     ppEqn.setReference(pRefCell, ppRefValue);
 
@@ -83,20 +84,8 @@ fvOptions.correct(U);
 p_rgh += pp;
 p_rgh.correctBoundaryConditions();
 
-// set pressure correction field to zero, which reduces memory overhead
-pp.primitiveFieldRef() = 0.0;
+Boussinesq.updateBackgroundPressure();
+p = p_rgh + Boussinesq.backgroundPressure();
+Info << "Reference pressure: " << getRefCellValue(p, pRefCell) << endl;
 
-p  = p_rgh + rhok*gh;
-
-// if (p_rgh.needReference())
-if (pRefOn)
-{
-    p += dimensionedScalar
-    (
-        "p",
-        p.dimensions(),
-        pRefValue - getRefCellValue(p, pRefCell)
-    );
-    
-    p_rgh = p - rhok*gh;
-}
+// #include "adjustPressureLevel.H"

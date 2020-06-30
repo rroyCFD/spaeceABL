@@ -1,6 +1,12 @@
     // Solve the momentum equation
     MRF.correctBoundaryVelocity(U);
 
+    // Update Coriolis forcing
+    Coriolis.update();
+
+    // Update buoyancy term
+    Boussinesq.updateBuoyancyTermVol();
+
     fvVectorMatrix UEqn
     (
         fvm::ddt(U) 
@@ -12,8 +18,12 @@
             + fvc::laplacian(turbulence->nuEff(), U.oldTime())
         )
         - fvc::div(turbulence->nuEff() * dev2((fvc::grad(U))().T()))
+        + fvc::div(Rwall) // wall shear stress  
      ==
-        - gh*fvc::grad(rhok)
+        // - gh*fvc::grad(rhok)
+          Boussinesq.buoyancyTermVol()
+        + momentumSourceTerm.force()
+        + Coriolis.force()
         + fvOptions(U)
     );
 
