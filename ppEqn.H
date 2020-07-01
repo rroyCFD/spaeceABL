@@ -86,6 +86,6 @@ p_rgh.correctBoundaryConditions();
 
 Info << "Reference pressure(rgh) before adjustment: " << getRefCellValue(p_rgh, pRefCell) << endl;
 #include "adjustPressureLevel.H"
-Info << "Reference pressure(rgh)  after adjustment: : " << getRefCellValue(p_rgh, pRefCell) << endl;
-Info << "Reference pressure       after adjustment: : " << getRefCellValue(p, pRefCell) << endl;
+Info << "Reference pressure(rgh)  after adjustment: " << getRefCellValue(p_rgh, pRefCell) << endl;
+Info << "Reference pressure       after adjustment: " << getRefCellValue(p, pRefCell) << endl;
 

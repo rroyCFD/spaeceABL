@@ -9,7 +9,6 @@ EXE_INC = \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(WM_PROJECT_USER_DIR)/src/finiteVolume/lnInclude \
-    -I$(WM_PROJECT_USER_DIR)/src/OpenFOAM/lnInclude \
     -I$(SOWFA_DIR)/src/ABLForcing/lnInclude \
     -I$(SOWFA_DIR)/src/meshTools/lnInclude
 
@@ -24,7 +23,6 @@ EXE_LIBS = \
     -lmeshTools \
     -L$(FOAM_USER_LIBBIN) \
     -lfiniteVolume_$(USER) \
-    -lOpenFOAM_$(USER) \
     -L$(SOWFA_DIR)/lib/$(WM_OPTIONS) \
     -lSOWFAABLForcing \
     -lSOWFAmeshTools
