@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    buoyantBoussinesqPimpleFoam
+    spaeceABL
 
 Description
     Transient solver for buoyant, turbulent flow of incompressible fluids.
@@ -52,6 +52,7 @@ Description
 #include "fvOptions.H"
 #include "spaeceControl.H"
 #include "orthogonalSnGrad.H"
+#include "wallFvPatch.H"
 
 #include "ABL.H"
 
@@ -94,6 +95,8 @@ int main(int argc, char *argv[])
 
         laminarTransport.correct();
         turbulence->correct();
+
+        #include "computeDivergence.H"
 
         runTime.write();
 
