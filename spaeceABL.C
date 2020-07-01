@@ -74,6 +74,11 @@ int main(int argc, char *argv[])
     turbulence->validate();
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    // Correct boundary conditions before starting in case anything needs
+    // updating, e.g. after using mapFields to interpolate initial field.
+    U.correctBoundaryConditions();
+    #include "turbulenceCorrect.H"
+    T.correctBoundaryConditions();
 
     Info<< "\nStarting time loop\n" << endl;
 
@@ -93,8 +98,7 @@ int main(int argc, char *argv[])
             #include "TEqn.H"
         }
 
-        laminarTransport.correct();
-        turbulence->correct();
+        #include "turbulenceCorrect.H"
 
         #include "computeDivergence.H"
 

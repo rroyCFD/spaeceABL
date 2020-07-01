@@ -16,3 +16,4 @@ if (pRefOn)
     p_rgh = p - Boussinesq.backgroundPressure();
 }
 
+// Shall the p, p_rgh BC be updated?
