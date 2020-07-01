@@ -1,6 +1,6 @@
 // create solution control object
 spaeceControl spaece(mesh, "SPAeCE");
-Info << spaece.algorithmName() << endl;
+// Info << spaece.algorithmName() << endl;
 
 Info<< "Creating/Reading thermophysical properties\n" << endl;
 

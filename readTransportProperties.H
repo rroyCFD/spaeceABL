@@ -1,12 +1,14 @@
 singlePhaseTransportModel laminarTransport(U, phi);
 
-// Thermal expansion coefficient [1/K]
-dimensionedScalar beta
-(
-    "beta",
-    dimless/dimTemperature,
-    laminarTransport
-);
+// // Thermal expansion coefficient [1/K]
+// dimensionedScalar beta
+// (
+//     "beta",
+//     dimless/dimTemperature,
+//     laminarTransport
+// );
+
+// beta is 1/TRef
 
 // Reference temperature [K]
 dimensionedScalar TRef("TRef", dimTemperature, laminarTransport);
