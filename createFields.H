@@ -172,7 +172,7 @@ buoyancyModel Boussinesq(T, TRef, hRef);
 mesh.setFluxRequired(pp.name());
 
 #include "createMRF.H"
-#include "createIncompressibleRadiationModel.H"
+// #include "createIncompressibleRadiationModel.H"
 #include "createFvOptions.H"
 
 #include "createRhieChow.H"

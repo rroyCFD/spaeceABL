@@ -13,8 +13,8 @@
       - fvc::div(qwall)
       - temperatureSourceTerm.force()
      ==
-        radiation->ST(rhoCpRef, T)
-      + fvOptions(T)
+        // radiation->ST(rhoCpRef, T)
+        fvOptions(T)
     );
 
     TEqn.relax();
@@ -23,7 +23,7 @@
 
     TEqn.solve();
 
-    radiation->correct();
+    // radiation->correct();
 
     fvOptions.correct(T);
 
