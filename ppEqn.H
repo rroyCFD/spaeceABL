@@ -61,6 +61,8 @@ while (spaece.correctNonOrthogonal())
     // no correction to reference cell pressure
     // at ref cell; background pressure is also zero; i.e. p[pRefCell] = p_rgh[pRefCell]
     scalar ppRefValue = pRefValue - getRefCellValue(p_rgh, pRefCell);
+    Info << "ppRefValue: " << ppRefValue << endl;
+
     ppEqn.setReference(pRefCell, ppRefValue);
 
     ppEqn.solve(mesh.solver(pp.select(spaece.finalInnerIter())));
@@ -81,6 +83,7 @@ U -= rAU*fvc::grad(pp);
 U.correctBoundaryConditions();
 fvOptions.correct(U);
 
+Info << "Reference pressure-corr before adjustment: " << getRefCellValue(pp, pRefCell) << endl;
 p_rgh += pp;
 p_rgh.correctBoundaryConditions();
 
