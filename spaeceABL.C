@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         // --- Pressure-velocity corrector loop
-        // while (spaece.correct())
+        while (spaece.correct())
         {
             #include "UEqn.H"
             #include "ppEqn.H"
