@@ -159,6 +159,7 @@ if (pRefCell != -1)
     hRef_ = mesh.C()[pRefCell];
 }
 reduce(hRef_,sumOp<vector>());
+Info << "Reference height: " << hRef_ << endl;
 dimensionedVector hRef("hRef",dimLength,hRef_);
     
 buoyancyModel Boussinesq(T, TRef, hRef);

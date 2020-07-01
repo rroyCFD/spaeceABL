@@ -1,10 +1,9 @@
 // Compute the full pressure and adjust the pressure level.
-// rhok is updated in TEqn, which solved after pressure
+// rhok is updated in TEqn
 Boussinesq.updateBackgroundPressure();
 
 p = p_rgh + Boussinesq.backgroundPressure();
 
-// if (p_rgh.needReference())
 if (pRefOn)
 {
     p += dimensionedScalar

@@ -60,7 +60,7 @@ while (spaece.correctNonOrthogonal())
 
     // no correction to reference cell pressure
     // at ref cell; background pressure is also zero; i.e. p[pRefCell] = p_rgh[pRefCell]
-    scalar ppRefValue = pRefValue - getRefCellValue(p, pRefCell);
+    scalar ppRefValue = pRefValue - getRefCellValue(p_rgh, pRefCell);
     ppEqn.setReference(pRefCell, ppRefValue);
 
     ppEqn.solve(mesh.solver(pp.select(spaece.finalInnerIter())));
@@ -84,8 +84,8 @@ fvOptions.correct(U);
 p_rgh += pp;
 p_rgh.correctBoundaryConditions();
 
-Boussinesq.updateBackgroundPressure();
-p = p_rgh + Boussinesq.backgroundPressure();
-Info << "Reference pressure: " << getRefCellValue(p, pRefCell) << endl;
+Info << "Reference pressure(rgh) before adjustment: " << getRefCellValue(p_rgh, pRefCell) << endl;
+#include "adjustPressureLevel.H"
+Info << "Reference pressure(rgh)  after adjustment: : " << getRefCellValue(p_rgh, pRefCell) << endl;
+Info << "Reference pressure       after adjustment: : " << getRefCellValue(p, pRefCell) << endl;
 
-// #include "adjustPressureLevel.H"
